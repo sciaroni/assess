@@ -11,7 +11,6 @@ spec:
       storage: 5Gi
   selector:
     matchLabels:
-       volume: jenkins
 ---
 apiVersion: v1
 kind: ReplicationController
@@ -35,7 +34,12 @@ spec:
           volumeMounts:
              - mountPath: /var/run/docker.sock
                name: dockersocket
+             - mountPath: /usr/bin/docker
+               name: dockerclient
       volumes:
+        - name: dockerclient
+          hostPath:
+            path: /usr/bin/docker
         - name: dockersocket
           hostPath:
             path: /var/run/docker.sock
