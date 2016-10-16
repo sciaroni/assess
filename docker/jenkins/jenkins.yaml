@@ -1,0 +1,42 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jenkins
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  selector:
+    matchLabels:
+       volume: jenkins
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: jenkins
+  labels:
+    app: jenkins
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      containers:
+        - name: jenkins
+          image: gcr.io/sodeko-146608/jenkins:latest
+          env:
+            - name: "JENKINS_SLACK_TOKEN"
+              value: "bla"
+          volumeMounts:
+             - mountPath: /var/run/docker.sock
+               name: dockersocket
+      volumes:
+        - name: dockersocket
+          hostPath:
+            path: /var/run/docker.sock
+---
